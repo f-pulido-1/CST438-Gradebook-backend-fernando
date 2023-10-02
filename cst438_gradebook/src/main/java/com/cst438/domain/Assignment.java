@@ -59,5 +59,9 @@ public class Assignment {
 		return "Assignment [id=" + id + ", course_id=" + course.getCourse_id() + ", name=" + name + ", dueDate=" + dueDate
 				+ "]";
 	}
+	public List<AssignmentGrade> getAssignmentGrades() {
+		// TODO Auto-generated method stub
+		return assignmentGrades;
+	}
 	
 }
