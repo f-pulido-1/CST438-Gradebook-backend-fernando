@@ -21,7 +21,6 @@ import com.cst438.domain.Enrollment;
 @ConditionalOnProperty(prefix = "registration", name = "service", havingValue = "rest")
 @RestController
 public class RegistrationServiceREST implements RegistrationService {
-
 	
 	RestTemplate restTemplate = new RestTemplate();
 	
@@ -44,7 +43,6 @@ public class RegistrationServiceREST implements RegistrationService {
 	@Autowired
 	EnrollmentRepository enrollmentRepository;
 
-	
 	/*
 	 * endpoint used by registration service to add an enrollment to an existing
 	 * course.
@@ -63,12 +61,9 @@ public class RegistrationServiceREST implements RegistrationService {
 	    enrollment.setStudentName(enrollmentDTO.studentName());
 	    enrollment.setStudentEmail(enrollmentDTO.studentEmail());
 	    enrollment.setCourse(course);  // Associate the enrollment with the course
-	    // Set other properties as needed
 
 	    // Save the enrollment to the database
 	    enrollmentRepository.save(enrollment);
 		return enrollmentDTO;
-
 	}
-
 }

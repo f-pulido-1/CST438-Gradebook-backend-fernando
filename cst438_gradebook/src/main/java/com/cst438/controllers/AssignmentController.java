@@ -65,7 +65,6 @@ public class AssignmentController {
 		}
 		AssignmentDTO adto = new AssignmentDTO(a.getId(), a.getName(), a.getDueDate().toString(), a.getCourse().getTitle(), a.getCourse().getCourse_id());
 		return adto;
-
 	}
 	
 	@PostMapping("/assignment")
@@ -73,9 +72,13 @@ public class AssignmentController {
 		// check that course exists and belongs to this instructor
 		String instructorEmail = "dwisneski@csumb.edu";  // user name (should be instructor's email)
 		Course c = courseRepository.findById(adto.courseId()).orElse(null);
-		if (c==null || ! c.getInstructor().equals(instructorEmail)) {
-			throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "course id not found or not authorized "+adto.courseId());
+
+		if (c == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course ID not found " + adto.courseId());
+		} else if (!c.getInstructor().equals(instructorEmail)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course ID not authorized " + adto.courseId());
 		}
+
 		// create and save assignment.  Return generated id to client.
 		Assignment a = new Assignment();
 		a.setCourse(c);
@@ -90,9 +93,14 @@ public class AssignmentController {
 		// check assignment belongs to a course for this instructor
 	    String instructorEmail = "dwisneski@csumb.edu";  // user name (should be instructor's email)
 	    Assignment a = assignmentRepository.findById(id).orElse(null);
-	    if (a==null || ! a.getCourse().getInstructor().equals(instructorEmail)) {
-	    	throw  new ResponseStatusException( HttpStatus.NOT_FOUND, "assignment not found or not authorized "+id);
-	    }
+
+		if (a == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found " + id);
+		} else if (!a.getCourse().getInstructor().equals(instructorEmail)) {
+			throw new ResponseStatusException(HttpStatus.NON_AUTHORITATIVE_INFORMATION, "Assignment not authorized " + id);
+		}
+
+
 	    a.setDueDate( java.sql.Date.valueOf(adto.dueDate()));
 	    a.setName(adto.assignmentName());
 	    assignmentRepository.save(a);

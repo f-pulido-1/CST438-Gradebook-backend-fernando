@@ -38,7 +38,6 @@ public class RegistrationServiceMQ implements RegistrationService {
 		System.out.println("MQ registration service ");
 	}
 
-
 	Queue registrationQueue = new Queue("registration-queue", true);
 
 	@Bean
@@ -56,7 +55,8 @@ public class RegistrationServiceMQ implements RegistrationService {
 		System.out.println("Gradebook has received: "+ message);
 
 		//TODO  deserialize message to EnrollmentDTO and update database
-		EnrollmentDTO[] enrollmentDTOs = fromJsonString(message, EnrollmentDTO[].class);
+		EnrollmentDTO[] enrollmentDTO = fromJsonString(message, EnrollmentDTO[].class);
+
 	}
 
 	/*
@@ -65,11 +65,11 @@ public class RegistrationServiceMQ implements RegistrationService {
 	@Override
 	public void sendFinalGrades(int course_id, FinalGradeDTO[] grades) {
 		 
-		System.out.println("Start sendFinalGrades "+course_id);
+		System.out.println("Start sendFinalGrades " + course_id);
 
 		// convert grades to JSON string and send to registration service
 		String data = asJsonString(grades);
-		rabbitTemplate.convertAndSend("gradebook-queue", data);
+		rabbitTemplate.convertAndSend(registrationQueue.getName(), data);
 	}
 	
 	private static String asJsonString(final Object obj) {
@@ -87,5 +87,4 @@ public class RegistrationServiceMQ implements RegistrationService {
 			throw new RuntimeException(e);
 		}
 	}
-
 }
