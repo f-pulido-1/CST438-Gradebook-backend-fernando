@@ -52,11 +52,23 @@ public class RegistrationServiceMQ implements RegistrationService {
 	@Transactional
 	public void receive(String message) {
 		
-		System.out.println("Gradebook has received: "+ message);
+		System.out.println("Gradebook has received: " + message);
 
-		//TODO  deserialize message to EnrollmentDTO and update database
-		EnrollmentDTO[] enrollmentDTO = fromJsonString(message, EnrollmentDTO[].class);
+		// deserialize message to EnrollmentDTO and update database
+		EnrollmentDTO e = fromJsonString(message, EnrollmentDTO.class);
 
+		// retrieve
+		Enrollment studentEnrollment = enrollmentRepository.findById(e.id()).orElse(null);
+
+		// update
+		if (studentEnrollment != null) {
+			studentEnrollment.setId(e.id());
+			studentEnrollment.setStudentName(e.studentName());
+			studentEnrollment.setStudentEmail(e.studentEmail());
+		}
+
+		// Save to database
+		enrollmentRepository.save(studentEnrollment);
 	}
 
 	/*
