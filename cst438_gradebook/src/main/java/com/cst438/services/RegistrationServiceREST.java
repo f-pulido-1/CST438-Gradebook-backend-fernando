@@ -21,7 +21,6 @@ import com.cst438.domain.Enrollment;
 @ConditionalOnProperty(prefix = "registration", name = "service", havingValue = "rest")
 @RestController
 public class RegistrationServiceREST implements RegistrationService {
-
 	
 	RestTemplate restTemplate = new RestTemplate();
 	
@@ -34,9 +33,8 @@ public class RegistrationServiceREST implements RegistrationService {
 	
 	@Override
 	public void sendFinalGrades(int course_id , FinalGradeDTO[] grades) { 
-		
-		//TODO use restTemplate to send final grades to registration service
-		
+	    String url = registration_url + "/" + course_id;
+	    restTemplate.put(url, grades);
 	}
 	
 	@Autowired
@@ -45,7 +43,6 @@ public class RegistrationServiceREST implements RegistrationService {
 	@Autowired
 	EnrollmentRepository enrollmentRepository;
 
-	
 	/*
 	 * endpoint used by registration service to add an enrollment to an existing
 	 * course.
@@ -53,14 +50,20 @@ public class RegistrationServiceREST implements RegistrationService {
 	@PostMapping("/enrollment")
 	@Transactional
 	public EnrollmentDTO addEnrollment(@RequestBody EnrollmentDTO enrollmentDTO) {
-		
 		// Receive message from registration service to enroll a student into a course.
-		
 		System.out.println("GradeBook addEnrollment "+enrollmentDTO);
 		
-		//TODO remove following statement when complete.
-		return null;
-		
-	}
+	    // Find the course by ID or however you get it
+	    Course course = courseRepository.findById(enrollmentDTO.courseId()).orElse(null);
 
+	    // Create a new enrollment
+	    Enrollment enrollment = new Enrollment();
+	    enrollment.setStudentName(enrollmentDTO.studentName());
+	    enrollment.setStudentEmail(enrollmentDTO.studentEmail());
+	    enrollment.setCourse(course);  // Associate the enrollment with the course
+
+	    // Save the enrollment to the database
+	    enrollmentRepository.save(enrollment);
+		return enrollmentDTO;
+	}
 }
