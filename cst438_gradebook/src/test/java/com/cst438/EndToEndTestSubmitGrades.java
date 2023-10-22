@@ -30,7 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class EndToEndTestSubmitGrades {
 
-	public static final String CHROME_DRIVER_FILE_LOCATION = "C:/chromedriver_win32/chromedriver.exe";
+	public static final String CHROME_DRIVER_FILE_LOCATION = "C:/chromedriver-win64/chromedriver.exe";
 
 	public static final String URL = "http://localhost:3000";
 	public static final int SLEEP_DURATION = 1000; // 1 second.
@@ -40,8 +40,6 @@ public class EndToEndTestSubmitGrades {
 
 	@Test
 	public void addCourseTest() throws Exception {
-
-
 
 		// set the driver location and start driver
 		//@formatter:off
