@@ -1,5 +1,6 @@
 package com.cst438.controllers;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,8 +49,8 @@ public class GradeBookController {
 	 * id - assignment id
 	 */
 	@GetMapping("/gradebook/{id}")
-	public GradeDTO[] getGradebook(@PathVariable("id") Integer assignmentId  ) {
-		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
+	public GradeDTO[] getGradebook(Principal principal, @PathVariable("id") Integer assignmentId  ) {
+		String email = principal.getName();  // user name (should be instructor's email)
 		Assignment assignment = checkAssignment(assignmentId, email);
 		// get the enrollments for the course
 		// for each enrollment, get the current grade for assignment, 
@@ -75,10 +76,10 @@ public class GradeBookController {
 	 */
 	@PostMapping("/course/{course_id}/finalgrades")
 	@Transactional
-	public void calcFinalGrades(@PathVariable int course_id) {
+	public void calcFinalGrades(Principal principal, @PathVariable int course_id) {
 		System.out.println("Gradebook - calcFinalGrades for course " + course_id);
 		// check that this request is from the course instructor 
-		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
+		String email = principal.getName();  // user name (should be instructor's email)
 		Course c = courseRepository.findById(course_id).orElse(null);
 		if (!c.getInstructor().equals(email)) {
 			throw new ResponseStatusException( HttpStatus.UNAUTHORIZED, "Not Authorized. " );
@@ -108,8 +109,8 @@ public class GradeBookController {
 	 */
 	@PutMapping("/gradebook/{id}")
 	@Transactional
-	public void updateGradebook (@RequestBody GradeDTO[] grades, @PathVariable("id") Integer assignmentId ) {
-		String email = "dwisneski@csumb.edu";  // user name (should be instructor's email) 
+	public void updateGradebook (Principal principal, @RequestBody GradeDTO[] grades, @PathVariable("id") Integer assignmentId ) {
+		String email = principal.getName();  // user name (should be instructor's email)
 		checkAssignment(assignmentId, email);  // check that user name matches instructor email of the course.
 		// for each grade, update the assignment grade in database 		
 		for (GradeDTO g : grades) {
@@ -124,7 +125,6 @@ public class GradeBookController {
 		}
 	}
 
-	
 	private Assignment checkAssignment(int assignmentId, String email) {
 		// get assignment 
 		Assignment assignment = assignmentRepository.findById(assignmentId).orElse(null);
@@ -137,7 +137,6 @@ public class GradeBookController {
 		}
 		return assignment;
 	}
-	
 	
 	private String letterGrade(double grade) {
 		if (grade >= 90) return "A";
